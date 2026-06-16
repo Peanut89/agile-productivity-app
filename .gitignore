@@ -4,6 +4,7 @@ node_modules/
 # Build output
 dist/
 dist-ssr/
+dev-dist/
 build/
 
 # Local env files

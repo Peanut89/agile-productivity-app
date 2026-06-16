@@ -3,30 +3,64 @@ import { db } from './db'
 import type { Task } from './types'
 
 export function useEpics() {
-  return useLiveQuery(() => db.epics.orderBy('createdAt').toArray(), [], [])
+  return useLiveQuery(
+    () =>
+      db.epics
+        .orderBy('createdAt')
+        .filter((e) => !e.deleted)
+        .toArray(),
+    [],
+    [],
+  )
 }
 
 export function useSprints() {
-  return useLiveQuery(() => db.sprints.orderBy('createdAt').reverse().toArray(), [], [])
+  return useLiveQuery(
+    () =>
+      db.sprints
+        .orderBy('createdAt')
+        .filter((s) => !s.deleted)
+        .reverse()
+        .toArray(),
+    [],
+    [],
+  )
 }
 
 export function useActiveSprint() {
   return useLiveQuery(
-    () => db.sprints.where('status').equals('active').first(),
+    () =>
+      db.sprints
+        .where('status')
+        .equals('active')
+        .and((s) => !s.deleted)
+        .first(),
     [],
     undefined,
   )
 }
 
 export function useStories() {
-  return useLiveQuery(() => db.stories.orderBy('order').toArray(), [], [])
+  return useLiveQuery(
+    () =>
+      db.stories
+        .orderBy('order')
+        .filter((s) => !s.deleted)
+        .toArray(),
+    [],
+    [],
+  )
 }
 
 export function useTasksByStory(storyId: string | undefined) {
   return useLiveQuery(
     () =>
       storyId
-        ? db.tasks.where('storyId').equals(storyId).sortBy('order')
+        ? db.tasks
+            .where('storyId')
+            .equals(storyId)
+            .and((t) => !t.deleted)
+            .sortBy('order')
         : Promise.resolve([] as Task[]),
     [storyId],
     [],
@@ -40,6 +74,7 @@ export function useTaskCounts() {
       const tasks = await db.tasks.toArray()
       const counts: Record<string, { total: number; done: number }> = {}
       for (const t of tasks) {
+        if (t.deleted) continue
         const c = (counts[t.storyId] ??= { total: 0, done: 0 })
         c.total++
         if (t.done) c.done++

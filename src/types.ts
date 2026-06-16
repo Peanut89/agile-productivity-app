@@ -36,7 +36,15 @@ export const EPIC_COLORS = [
   '#fb923c', // orange
 ] as const
 
-export interface Epic {
+/** Fields every syncable entity carries for cloud sync (last-write-wins). */
+export interface Syncable {
+  updatedAt: number
+  deleted?: boolean
+  /** Set on local writes; cleared once pushed to the cloud. Never synced. */
+  dirty?: boolean
+}
+
+export interface Epic extends Syncable {
   id: string
   title: string
   description?: string
@@ -44,7 +52,7 @@ export interface Epic {
   createdAt: number
 }
 
-export interface Sprint {
+export interface Sprint extends Syncable {
   id: string
   name: string
   goal?: string
@@ -54,7 +62,7 @@ export interface Sprint {
   createdAt: number
 }
 
-export interface Story {
+export interface Story extends Syncable {
   id: string
   title: string
   description?: string
@@ -67,7 +75,7 @@ export interface Story {
   createdAt: number
 }
 
-export interface Task {
+export interface Task extends Syncable {
   id: string
   storyId: string
   title: string

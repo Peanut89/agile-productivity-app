@@ -70,3 +70,22 @@ export const SprintIcon = (p: IconProps) => (
     <rect x="3" y="4" width="18" height="18" rx="2" />
   </svg>
 )
+
+export const CloudIcon = (p: IconProps) => (
+  <svg {...base(p)}>
+    <path d="M17.5 19a4.5 4.5 0 0 0 0-9 6 6 0 0 0-11.6-1.5A4 4 0 0 0 6.5 19h11Z" />
+  </svg>
+)
+
+export const CloudCheckIcon = (p: IconProps) => (
+  <svg {...base(p)}>
+    <path d="M17.5 19a4.5 4.5 0 0 0 0-9 6 6 0 0 0-11.6-1.5A4 4 0 0 0 6.5 19" />
+    <path d="m9 15 2 2 4-4" />
+  </svg>
+)
+
+export const RefreshIcon = (p: IconProps) => (
+  <svg {...base(p)}>
+    <path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6" />
+  </svg>
+)

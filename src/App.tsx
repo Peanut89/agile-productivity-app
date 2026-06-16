@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import { useStories, useEpics, useSprints, useActiveSprint, useTaskCounts } from './hooks'
+import { useSession } from './auth/useSession'
+import { useSyncLifecycle, useSyncStatus } from './sync/useSync'
 import { BottomNav, type Tab } from './components/BottomNav'
+import { TopBar } from './components/TopBar'
 import { Board } from './components/Board'
 import { Backlog } from './components/Backlog'
 import { Epics } from './components/Epics'
@@ -9,6 +12,7 @@ import { StoryDetailSheet } from './components/StoryDetailSheet'
 import { CreateStorySheet } from './components/CreateStorySheet'
 import { CreateEpicSheet } from './components/CreateEpicSheet'
 import { CreateSprintSheet } from './components/CreateSprintSheet'
+import { AccountSheet } from './components/AccountSheet'
 import { PlusIcon } from './components/icons'
 
 type CreateKind = 'story' | 'epic' | 'sprint' | null
@@ -17,6 +21,11 @@ export function App() {
   const [tab, setTab] = useState<Tab>('board')
   const [openStoryId, setOpenStoryId] = useState<string | null>(null)
   const [creating, setCreating] = useState<CreateKind>(null)
+  const [accountOpen, setAccountOpen] = useState(false)
+
+  const { session } = useSession()
+  useSyncLifecycle(session?.user.id)
+  const sync = useSyncStatus()
 
   const stories = useStories()
   const epics = useEpics()
@@ -33,7 +42,11 @@ export function App() {
 
   return (
     <div className="mx-auto flex h-full max-w-md flex-col">
-      <header className="safe-top" />
+      <TopBar
+        status={sync.status}
+        signedIn={!!session}
+        onOpenAccount={() => setAccountOpen(true)}
+      />
 
       <main className="min-h-0 flex-1 pt-3">
         {tab === 'board' && (
@@ -88,6 +101,13 @@ export function App() {
       <CreateSprintSheet
         open={creating === 'sprint'}
         onClose={() => setCreating(null)}
+      />
+      <AccountSheet
+        open={accountOpen}
+        onClose={() => setAccountOpen(false)}
+        session={session}
+        status={sync.status}
+        lastSyncedAt={sync.lastSyncedAt}
       />
     </div>
   )
